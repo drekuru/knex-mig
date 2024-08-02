@@ -15,6 +15,6 @@ export type MigrateOptions = {
     all?: boolean;
     force?: boolean;
     but?: string[];
-    between?: string[];
+    between?: string[][];
     upto?: number;
 };
