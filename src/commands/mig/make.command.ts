@@ -1,4 +1,4 @@
-import { ConnectionManager, MigrationManager } from '@src/components';
+import { ConnectionManager, FileManager } from '@src/components';
 import { MakeFileOptions } from '@src/types';
 import { getFileName } from '@src/utils';
 import chalk from 'chalk';
@@ -9,7 +9,7 @@ import path from 'path';
  * if no extension is provided, it will default to `.js`, otherwise it will use the provided extension.
  */
 export const makeFile = async (fileName: string, options?: MakeFileOptions): Promise<void> => {
-    const files = MigrationManager.listMigrations({ cleanNames: true });
+    const files = FileManager.listMigrations({ cleanNames: true });
 
     // no periods in name
     fileName = getFileName(fileName, true);

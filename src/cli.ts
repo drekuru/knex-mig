@@ -48,7 +48,7 @@ envCmd
     .description('Adds a new env configuration')
     .action(Commands.addEnv)
     .argument('<path>', 'path to the env file to add')
-    .argument('[name]', 'name of the env file to add - defaults to the file name')
+    .argument('[name]', 'name of the env file to add - defaults to the name of the passed in file')
     .option('-c, --set-current', 'makes the env the current one', false)
     .option('-o, --overwrite', 'overwrites the env if it already exists', false);
 
@@ -58,6 +58,13 @@ envCmd
     .description('Prints the current env configuration')
     .action(Commands.getCurrentEnv)
     .option(...(REUSABLE_OPTIONS.verbose as [string, string]));
+
+envCmd
+    .command('init')
+    .aliases(['i', 'create'])
+    .description('Creates a new env file')
+    .action(Commands.initEnv)
+    .argument('[name]', 'name of the file to create');
 
 /**
  * ---------------------------------------------------------------------------
