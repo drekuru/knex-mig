@@ -1,6 +1,6 @@
-import { EnvManager, PathManager } from '@src/components';
-import { AddEnvOptions } from '@src/types';
-import { getFileName } from '@src/utils';
+import { EnvManager, PathManager } from '../../components';
+import { AddEnvOptions } from '../../types';
+import { getFileName } from '../../utils';
 import chalk from 'chalk';
 import { copyFileSync, existsSync } from 'fs';
 import path from 'path';

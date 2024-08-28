@@ -1,4 +1,4 @@
-import { IdentifierMapperOptions, IdentifierMappersReturn } from '@src/types';
+import { IdentifierMapperOptions, IdentifierMappersReturn } from '../../types';
 import { camelCase, snakeCase } from '../strings';
 
 export const isObject = (value: any): boolean => {

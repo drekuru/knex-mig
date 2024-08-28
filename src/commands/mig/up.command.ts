@@ -1,4 +1,5 @@
-import { MigrateOptions } from '@src/types';
+import { FileManager } from '../../components/file-manager/manager';
+import { MigrateOptions } from '../../types';
 
 /**
  * @description Handles migrating up
@@ -16,4 +17,6 @@ export const migUp = async (
         between: [],
         but: []
     }
-): Promise<void> => {};
+): Promise<void> => {
+    const filesToMigrate = FileManager.prepareFilesToMigrate(filenames || [], options);
+};

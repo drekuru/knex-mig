@@ -1,6 +1,6 @@
-import { EnvConfig } from '@src/types';
+import { EnvConfig } from '../types';
 import knex, { Knex } from 'knex';
-import { knexSnakeCaseMappers, safeRead } from '@src/utils';
+import { knexSnakeCaseMappers, safeRead } from '../utils';
 import { EnvManager } from './env.manager';
 
 /**
@@ -9,14 +9,13 @@ import { EnvManager } from './env.manager';
  */
 export class ConnectionManager {
     private static _config: EnvConfig;
+    private static _knex: Knex<any, unknown[]>;
 
-    static knex: Knex<any, unknown[]>;
-
-    static get(): Knex<any, unknown[]> {
-        if (!this.knex) {
-            this.knex = knex(this.mapEnvsToKnexConfig());
+    static get knex(): Knex<any, unknown[]> {
+        if (!this._knex) {
+            this._knex = knex(this.mapEnvsToKnexConfig());
         }
-        return this.knex;
+        return this._knex;
     }
 
     // TODO: figure out the type here

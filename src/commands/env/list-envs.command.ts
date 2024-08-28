@@ -1,5 +1,5 @@
-import { EnvManager } from '@src/components';
-import { printListStyle } from '@src/utils';
+import { EnvManager } from '../../components';
+import { printListStyle } from '../../utils';
 import chalk from 'chalk';
 
 export const listEnvs = (): void => {

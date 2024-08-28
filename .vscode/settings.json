@@ -1,6 +1,6 @@
 {
   // typescript use absolute path for import autocomplete
-  "typescript.preferences.importModuleSpecifier": "shortest",
+  "typescript.preferences.importModuleSpecifier": "relative",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },

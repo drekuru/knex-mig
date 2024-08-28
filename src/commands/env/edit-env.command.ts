@@ -1,4 +1,4 @@
-import { ContextManager, EnvManager } from '@src/components';
+import { ContextManager, EnvManager } from '../../components';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 

@@ -1,4 +1,4 @@
-import { ContextManager, EnvManager } from '@src/components';
+import { ContextManager, EnvManager } from '../../components';
 import chalk from 'chalk';
 
 export const setEnv = (name: string): void => {

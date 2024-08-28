@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { PathManager } from './path.manager';
 import dotenv from 'dotenv';
-import { getFileName } from '@src/utils';
+import { getFileName } from '../utils';
 
 export class EnvManager {
     private static env: Record<string, string>;

@@ -1,8 +1,8 @@
-import { ConnectionManager } from '@src/components';
+import { ConnectionManager } from '../../components';
 import chalk from 'chalk';
 
 export const ping = async (): Promise<void> => {
-    const knex = ConnectionManager.get();
+    const knex = ConnectionManager.knex;
 
     try {
         await knex.raw('SELECT 1');

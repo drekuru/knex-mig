@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import { EnvManager, ContextManager } from '@src/components';
-import { CommonOptions } from '@src/types';
+import { EnvManager, ContextManager } from '../../components';
+import { CommonOptions } from '../../types';
 
 export const getCurrentEnv = (options: CommonOptions = {}): void => {
     const { envName } = ContextManager.ctx;

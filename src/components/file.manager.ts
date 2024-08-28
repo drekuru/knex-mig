@@ -1,15 +1,22 @@
 import { existsSync, readdirSync } from 'fs';
 import { EnvManager } from './env.manager';
 import chalk from 'chalk';
-import { cleanFileName } from '@src/utils';
+import { cleanFileName } from '../utils';
+import { MigrateOptions, MigFile, KnexFileType } from '../types';
+import { ConnectionManager } from './connection.manager';
 
 export class FileManager {
-    private static listedMigrations: string[] = [];
-    private static namedMigrations: Record<string, string> = {};
-    private static indexedMigrations: Record<string, string> = {};
+    private static mapOfExistingMigrationFiles: Map<string, MigFile> = new Map();
+    private static indexedMapOfExistingMigrationFiles: Map<number, MigFile> = new Map();
+    private static completedMigrations: KnexFileType[] = [];
 
-    static listMigrations({ cleanNames = false } = {}): string[] {
-        if (!this.listedMigrations.length) {
+    static {
+        this.loadExistingMigrationFiles();
+    }
+
+    private static loadExistingMigrationFiles(): void {
+        // load existing migrations
+        if (!this.mapOfExistingMigrationFiles.size) {
             const pathToMigrations = EnvManager.get().MIGRATIONS_DIR;
 
             if (!pathToMigrations || !existsSync(pathToMigrations)) {
@@ -19,41 +26,110 @@ export class FileManager {
 
             const files = readdirSync(pathToMigrations);
 
-            if (cleanNames) {
-                this.listedMigrations = files.map((file) => cleanFileName(file));
+            for (let i = 0; i < files.length; i++) {
+                const cleanName = cleanFileName(files[i]);
+
+                const migFile: MigFile = {
+                    index: i,
+                    fullName: files[i],
+                    cleanedName: cleanName
+                };
+
+                this.mapOfExistingMigrationFiles.set(cleanName, migFile);
+                this.indexedMapOfExistingMigrationFiles.set(i, migFile);
+            }
+        }
+    }
+
+    public static prepareFilesToMigrate(filenames: string[], opts: MigrateOptions): Map<string, MigFile> {
+        let filesToMigrate: Map<string, MigFile> = new Map();
+
+        console.log('existing migrations', this.mapOfExistingMigrationFiles);
+
+        // handle all flag
+        if (opts.all === true) {
+            filesToMigrate = new Map(this.mapOfExistingMigrationFiles);
+        }
+        // handle specific files
+        else if (filenames.length) {
+            for (const filename of filenames) {
+                const match = this.getMigrationFile(filename);
+
+                if (match) {
+                    filesToMigrate.set(match.cleanedName, match);
+                }
             }
         }
 
-        return this.listedMigrations;
-    }
+        console.log('after all flag', filesToMigrate);
 
-    static deleteMigration(migrationName: string): void {
-        delete this.namedMigrations[migrationName];
-        delete this.indexedMigrations[migrationName];
-    }
+        // handle between flag
+        if (opts.between?.length) {
+            for (const [start, end] of opts.between) {
+                let firstIndex = Number.parseInt(start);
+                let lastIndex = Number.parseInt(end);
 
-    static getMigration(migrationName: string): string {
-        const file = this.namedMigrations[migrationName] || this.indexedMigrations[migrationName];
+                // if pair is backwards, swap them
+                if (firstIndex > lastIndex) {
+                    [firstIndex, lastIndex] = [lastIndex, firstIndex];
+                }
 
-        return file;
-    }
-
-    static get migrations(): {
-        named: Record<string, string>;
-        indexed: Record<string, string>;
-    } {
-        if (!this.migrations) {
-            const migrations = this.listMigrations({ cleanNames: true });
-
-            for (let i = 0; i < migrations.length; i++) {
-                this.namedMigrations[migrations[i]] = migrations[i];
-                this.indexedMigrations[i.toString()] = migrations[i];
+                for (let i = firstIndex; i <= lastIndex; i++) {
+                    const match = this.indexedMapOfExistingMigrationFiles.get(i);
+                    if (match) {
+                        filesToMigrate.set(match.cleanedName, match);
+                    }
+                }
             }
         }
 
-        return {
-            named: this.namedMigrations,
-            indexed: this.indexedMigrations
-        };
+        // handle upto flag
+        if (opts.upto !== undefined) {
+            for (let i = 0; i <= opts.upto; i++) {
+                const match = this.indexedMapOfExistingMigrationFiles.get(i);
+                if (match) {
+                    filesToMigrate.set(match.cleanedName, match);
+                }
+            }
+        }
+
+        // handle but flag
+        if (opts.but?.length) {
+            for (const filename of opts.but) {
+                const match = this.getMigrationFile(filename);
+
+                if (match) {
+                    filesToMigrate.delete(match.cleanedName);
+                }
+            }
+        }
+
+        return filesToMigrate;
+    }
+
+    private static getMigrationFile(val: string): MigFile | undefined {
+        return this.mapOfExistingMigrationFiles.get(val) || this.indexedMapOfExistingMigrationFiles.get(Number(val));
+    }
+
+    static getMigrationFiles(): MigFile[] {
+        return Array.from(this.mapOfExistingMigrationFiles.values());
+    }
+
+    static async getCompletedMigrations(): Promise<KnexFileType[]> {
+        if (!this.completedMigrations.length) {
+            const [completed] = await ConnectionManager.knex.migrate.list();
+
+            this.completedMigrations = completed.map((e) => {
+                const cleanedName = cleanFileName(e.name);
+                const knexFile: KnexFileType = {
+                    cleanedName,
+                    fullName: e.name
+                };
+
+                return knexFile;
+            });
+        }
+
+        return this.completedMigrations;
     }
 }

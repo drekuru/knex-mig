@@ -20,11 +20,11 @@
     "allowJs": true,
     "esModuleInterop": true,
     "noImplicitReturns": true,
-    "resolveJsonModule": true,
-    "paths": {
-      "@src/*": ["src/*"]
-    }
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules", "test", "dist"],
-  "include": ["./src/**/*.ts"]
+  "include": ["./src/**/*.ts"],
+  "ts-node": {
+    "swc": true
+  }
 }

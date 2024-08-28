@@ -1,2 +1,2 @@
-import { PathManager } from '@src/components';
+import { PathManager } from '../components';
 PathManager.setupPaths();

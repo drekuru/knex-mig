@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
-import { CommonOptions } from '@src/types';
+import { CommonOptions } from '../types';
 
 export class PathManager {
     static USER_HOME = process.env.USERPROFILE || process.env.HOME || '';

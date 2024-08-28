@@ -1,7 +1,7 @@
 import { PathManager } from './path.manager';
 import chalk from 'chalk';
 import fs from 'fs';
-import { Context } from '@src/types';
+import { Context } from '../types';
 
 export class ContextManager {
     private static context: Context;

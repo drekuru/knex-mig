@@ -1,4 +1,4 @@
-import { handleCommaSeparateArgs } from '@src/utils';
+import { handleCommaSeparateArgs } from '../utils';
 
 export const REUSABLE_OPTIONS = {
     all: ['-a, --all', 'runs respective operation on all of the objects/files available'],

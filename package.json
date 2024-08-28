@@ -25,7 +25,7 @@
     "clean:all": "rm -rf ./dist && rm -rf ./node_modules",
     "lint": "eslint --fix .",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "build": "tsc -p tsconfig.json && resolve-tspaths",
+    "build": "tsc -p tsconfig.json",
     "postinstall": "node ./dist/setup/post-install.js",
     "husky": "husky install",
     "omig": "node ./dist/cli.js",
@@ -44,6 +44,8 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.7",
+    "@swc/cli": "^0.4.0",
+    "@swc/core": "^1.7.21",
     "@types/node": "^20.14.5",
     "@types/pg": "^8.11.6",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
