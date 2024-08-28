@@ -3,3 +3,8 @@ export type MigFile = {
     cleanedName: string;
     index: number;
 };
+
+export type KnexFileType = {
+    fullName: string;
+    cleanedName: string;
+};

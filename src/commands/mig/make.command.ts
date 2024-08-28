@@ -1,6 +1,6 @@
-import { ConnectionManager, FileManager } from '@src/components';
-import { MakeFileOptions } from '@src/types';
-import { getFileName } from '@src/utils';
+import { ConnectionManager, FileManager } from '../../components';
+import { MakeFileOptions } from '../../types';
+import { getFileName } from '../../utils';
 import chalk from 'chalk';
 import path from 'path';
 
@@ -9,12 +9,15 @@ import path from 'path';
  * if no extension is provided, it will default to `.js`, otherwise it will use the provided extension.
  */
 export const makeFile = async (fileName: string, options?: MakeFileOptions): Promise<void> => {
-    const files = FileManager.listMigrations({ cleanNames: true });
+    const existingMigrationFiles = await FileManager.getMigrationFiles();
 
     // no periods in name
     fileName = getFileName(fileName, true);
 
-    if (files.includes(fileName)) {
+    // check for existing file
+    const nameIsTaken = existingMigrationFiles.some((file) => file.cleanedName === fileName);
+
+    if (nameIsTaken) {
         console.log(chalk.red(`Migration file ${chalk.redBright(fileName)} already exists`));
         return;
     }
@@ -24,7 +27,7 @@ export const makeFile = async (fileName: string, options?: MakeFileOptions): Pro
     if (options?.extension === '.sql') {
         // TODO: implement this
     } else {
-        const knex = ConnectionManager.get();
+        const knex = ConnectionManager.knex;
 
         await knex
             .transaction(async (trx) => {

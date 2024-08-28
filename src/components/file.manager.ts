@@ -41,10 +41,11 @@ export class FileManager {
         }
     }
 
-    public static prepareFilesToMigrate(filenames: string[], opts: MigrateOptions): Map<string, MigFile> {
+    public static async prepareFilesToMigrate(
+        filenames: string[],
+        opts: MigrateOptions
+    ): Promise<Map<string, MigFile>> {
         let filesToMigrate: Map<string, MigFile> = new Map();
-
-        console.log('existing migrations', this.mapOfExistingMigrationFiles);
 
         // handle all flag
         if (opts.all === true) {
@@ -60,8 +61,6 @@ export class FileManager {
                 }
             }
         }
-
-        console.log('after all flag', filesToMigrate);
 
         // handle between flag
         if (opts.between?.length) {
@@ -102,6 +101,13 @@ export class FileManager {
                     filesToMigrate.delete(match.cleanedName);
                 }
             }
+        }
+
+        // get existing migrations and remove them from the list
+        const completedMigrations = await this.getCompletedMigrations();
+
+        for (const completedMigration of completedMigrations) {
+            filesToMigrate.delete(completedMigration.cleanedName);
         }
 
         return filesToMigrate;

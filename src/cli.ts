@@ -7,6 +7,8 @@ const pkg = require('../package.json');
 import { Command } from 'commander';
 import * as Commands from './commands';
 import { REUSABLE_OPTIONS } from './constants';
+import { handleCommaSeparateArgs } from './utils';
+import { ConnectionManager } from './components';
 
 const mig = new Command();
 mig.name('mig').version(pkg.version);
@@ -80,5 +82,21 @@ mig.command('ping')
     .description('Checks the connection to the database')
     .action(Commands.ping)
     .aliases(['p', 'connect']);
+
+mig.command('up')
+    .description('Run migrations')
+    .action(Commands.migUp)
+    .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs)
+    .option(...(REUSABLE_OPTIONS.all as [string, string]))
+    .option(...(REUSABLE_OPTIONS.force as [string, string]))
+    .option(...(REUSABLE_OPTIONS.between as [string, string]))
+    .option(...(REUSABLE_OPTIONS.but as [string, string]))
+    .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
+    .option(...(REUSABLE_OPTIONS.upto as [string, string]));
+
+// handle closing the connection
+mig.hook('postAction', async () => {
+    await ConnectionManager.destroy();
+});
 
 mig.parse();
