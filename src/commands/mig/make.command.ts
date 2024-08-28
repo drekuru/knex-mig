@@ -9,7 +9,7 @@ import path from 'path';
  * if no extension is provided, it will default to `.js`, otherwise it will use the provided extension.
  */
 export const makeFile = async (fileName: string, options?: MakeFileOptions): Promise<void> => {
-    const existingMigrationFiles = await FileManager.getMigrationFiles();
+    const existingMigrationFiles = FileManager.getMigrationFiles();
 
     // no periods in name
     fileName = getFileName(fileName, true);
