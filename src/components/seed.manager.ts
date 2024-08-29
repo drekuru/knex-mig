@@ -36,7 +36,7 @@ export class SeedManager {
         if (node.isFile) {
             pp.info(`${prefix}${connector}${node.name}`);
         } else {
-            pp.info(`${prefix}${connector}${node.name}`, Colors.orange);
+            pp.info(`${prefix}${connector}${Colors.orange(node.name)}`);
 
             const children = Array.from(node.children?.values() || []);
             children.forEach((child, index) => {
