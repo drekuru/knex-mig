@@ -1,11 +1,20 @@
-import fs from 'fs';
-import path from 'path';
 import chalk from 'chalk';
+import { ConnectionManager, FileManager } from '../../components';
+import { MigrateOptions } from '../../types';
+import { pp } from '../../utils';
 
-export class PathManager {
-    private static USER_HOME = process.env.HOME || process.env.USERPROFILE || '.';
-    private static CONFIG_DIR = path.join(PathManager.USER_HOME, '.config');
-    private static MIG_DIR = path.join(PathManager.CONFIG_DIR, '.mig');
-    private static ENV_S = path.join(PathManager.MIG_DIR, 'envs');
-    private static CONTEXT_FILE = path.join(PathManager.MIG_DIR, 'context.json');
-}
+/**
+ * @description Handles migrating up
+ * the logic is as follows
+ * 1. prepare filenames to be migrated
+ * 2. migrate up the remaining migrations
+ */
+export const refresh = async (
+    filenames: string[] = [],
+    options: MigrateOptions = {
+        force: false,
+        all: false,
+        between: [],
+        but: []
+    }
+): Promise<void> => {};
