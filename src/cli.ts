@@ -94,6 +94,17 @@ mig.command('up')
     .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
     .option(...(REUSABLE_OPTIONS.upto as [string, string]));
 
+mig.command('down')
+    .description('Rollback migrations')
+    .action(Commands.migDown)
+    .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs)
+    .option(...(REUSABLE_OPTIONS.all as [string, string]))
+    .option(...(REUSABLE_OPTIONS.force as [string, string]))
+    .option(...(REUSABLE_OPTIONS.between as [string, string]))
+    .option(...(REUSABLE_OPTIONS.but as [string, string]))
+    .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
+    .option(...(REUSABLE_OPTIONS.upto as [string, string]));
+
 mig.command('state').aliases(['ss', 'status']).action(Commands.getState);
 
 // handle closing the connection
