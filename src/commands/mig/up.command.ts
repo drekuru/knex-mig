@@ -43,6 +43,8 @@ export const migUp = async (
                 });
             }
 
+            pp.info('Migrated up successfully!');
+
             return trx;
         })
         .catch((err) => {

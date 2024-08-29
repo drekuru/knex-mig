@@ -22,5 +22,6 @@ export const pp = {
 
 export const Colors = {
     orange: chalk.rgb(255, 136, 0),
-    indianRed: chalk.rgb(255, 95, 135)
+    indianRed: chalk.rgb(255, 95, 135),
+    yellowOlive: chalk.rgb(135, 175, 0)
 };
