@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 
 // Pretty print
 export const pp = {
-    log: (message = '', color: Chalk = chalk.white): void => {
+    log: (message: any = '', color: Chalk = chalk.white): void => {
         console.log(color(message));
     },
     debug: (message?: string, color: Chalk = chalk.blue): void => {
