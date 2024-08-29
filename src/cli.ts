@@ -8,16 +8,51 @@ import { Command } from 'commander';
 import * as Commands from './commands';
 import { REUSABLE_OPTIONS } from './constants';
 import { handleCommaSeparateArgs } from './utils';
-import { ConnectionManager } from './components';
+import { ConnectionManager, FileManager } from './components';
 
 const mig = new Command();
 mig.name('mig').version(pkg.version);
 
 const envCmd = mig.command('env');
-const seedCmd = mig.command('seed');
 
 /**
- * ---------------------------------------------------------------------------
+ * ------------------------------ HOOKS ----------------------------------
+ */
+// handle loading the files (only for certain commands)
+const commandsToPreLoadFilesFor = ['up', 'down', 'refresh', 'clean', 'state'];
+mig.hook('preAction', async (cmd, action) => {
+    if (commandsToPreLoadFilesFor.includes(action.name())) {
+        await FileManager.init();
+    }
+});
+
+// handle closing the connection
+mig.hook('postAction', async () => {
+    await ConnectionManager.destroy();
+});
+
+/**
+ * ------------------------------- SEED --------------------------------------
+ */
+const seedCmd = mig.command('seed');
+// seedCmd
+//     .command('make')
+//     .aliases(['m', 'mk'])
+//     .description('Creates a new seed file')
+//     .action(Commands.makeSeed)
+//     .argument('<filename>', 'name of the file to create');
+
+seedCmd.command('list').aliases(['l', 'ls']).description('List existing seed files').action(Commands.listSeeds);
+
+seedCmd
+    .command('run')
+    .aliases(['r'])
+    .description('Run seed files')
+    .action(Commands.runSeeds)
+    .argument('[filenames...]', 'seed files to run', handleCommaSeparateArgs);
+
+/**
+ * ------------------------------- ENV --------------------------------------
  */
 envCmd.description('Manages the env files, do `mig env -h` for more info');
 
@@ -69,7 +104,7 @@ envCmd
     .argument('[name]', 'name of the file to create');
 
 /**
- * ---------------------------------------------------------------------------
+ * -------------------------------- MIG ---------------------------------------
  */
 mig.command('make')
     .aliases(['m', 'mk', 'create', 'add', 'a', 'generate', 'g', 'gen'])
@@ -105,11 +140,24 @@ mig.command('down')
     .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
     .option(...(REUSABLE_OPTIONS.upto as [string, string]));
 
+mig.command('refresh')
+    .aliases(['r'])
+    .description('Runs mig down and mig up on specified migrations')
+    .action(Commands.refresh)
+    .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs)
+    .option(...(REUSABLE_OPTIONS.all as [string, string]))
+    .option(...(REUSABLE_OPTIONS.force as [string, string]))
+    .option(...(REUSABLE_OPTIONS.between as [string, string]))
+    .option(...(REUSABLE_OPTIONS.but as [string, string]))
+    .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
+    .option(...(REUSABLE_OPTIONS.upto as [string, string]));
+
 mig.command('state').aliases(['ss', 'status']).action(Commands.getState);
 
-// handle closing the connection
-mig.hook('postAction', async () => {
-    await ConnectionManager.destroy();
-});
+mig.command('clean')
+    .description('Removes the log for migration file(s) from the database - but does not actually rollback the changes')
+    .aliases(['c', 'clear'])
+    .action(Commands.clean)
+    .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs);
 
 mig.parse();

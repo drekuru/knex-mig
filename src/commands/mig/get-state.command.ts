@@ -9,15 +9,15 @@ import { Colors, pp } from '../../utils';
  */
 export const getState = async (): Promise<void> => {
     try {
-        const completedMigrations = await FileManager.getCompletedMigrations();
-        const pendingMigrations = await FileManager.getPendingMigrations();
+        const completedMigrations = FileManager.getCompletedMigrations();
+        const pendingMigrations = FileManager.getPendingMigrations();
 
-        pp.warn(`Found [${completedMigrations.length}] completed migrations`, Colors.indianRed);
+        pp.info(`Found [${completedMigrations.length}] completed migrations`);
         for (const file of completedMigrations) {
-            pp.info(`[${file.index}] - ${file.cleanedName}`);
+            pp.info(`${file.index} - ${file.cleanedName}`, Colors.yellowOlive);
         }
 
-        pp.warn(`Found [${chalk.yellowBright(pendingMigrations.length)}] pending migrations`);
+        pp.warn(`\nFound [${chalk.yellowBright(pendingMigrations.length)}] pending migrations`);
         for (const file of pendingMigrations) {
             pp.log(`${file.index} - ${file.cleanedName}`, Colors.orange);
         }

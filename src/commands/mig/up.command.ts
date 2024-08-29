@@ -18,10 +18,10 @@ export const migUp = async (
         but: []
     }
 ): Promise<void> => {
-    const filesToMigrate = await FileManager.prepareFilesToMigrate(filenames || [], options);
+    const filesToMigrate = FileManager.prepareFilesToMigrate(filenames || [], options);
 
     // get existing migrations and remove them from the list
-    const completedMigrations = await FileManager.getCompletedMigrations();
+    const completedMigrations = FileManager.getCompletedMigrations();
 
     for (const completedMigration of completedMigrations) {
         filesToMigrate.delete(completedMigration.cleanedName);
@@ -42,6 +42,8 @@ export const migUp = async (
                     name: filename.fullName
                 });
             }
+
+            pp.info('Migrated up successfully!');
 
             return trx;
         })
