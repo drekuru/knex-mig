@@ -4,3 +4,4 @@ Roadmap:
 `mig setup` - Setup the migration environment (should create a .mig folder in the root of the project, as well as help them initialize the .env file)
 `mig whoami` - Show the current user (should show the current user that is logged in) (can be used with `mig ping`)
 `mig destroy` - Should wipe all of the schemas and reset knex migrations table
+make colors in pp. consistent
