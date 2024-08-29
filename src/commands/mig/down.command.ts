@@ -18,10 +18,10 @@ export const migDown = async (
         but: []
     }
 ): Promise<void> => {
-    const filesToMigrate = await FileManager.prepareFilesToMigrate(filenames || [], options);
+    const filesToMigrate = FileManager.prepareFilesToMigrate(filenames || [], options);
 
     // get existing migrations
-    const completedMigrations = await FileManager.getCompletedMigrations();
+    const completedMigrations = FileManager.getCompletedMigrations();
 
     // remove files that are not in the completed migrations
     for (const file of filesToMigrate.values()) {
