@@ -7,6 +7,7 @@ import path from 'path';
 
 export class SeedManager {
     private static tree: SeedNode;
+    private static fileCount: number = 0;
 
     static initFileTree(): void {
         if (!this.tree) {
@@ -22,8 +23,12 @@ export class SeedManager {
         }
     }
 
-    static printTree(rootNode: SeedNode = this.tree): void {
+    static printTree(rootNode?: SeedNode): void {
         this.initFileTree();
+
+        if (!rootNode) {
+            rootNode = this.tree;
+        }
 
         pp.info('Seed Dir:');
         this.printNode(rootNode, 0, true);
@@ -35,7 +40,7 @@ export class SeedManager {
         const newPrefix = prefix + (isLast ? '    ' : '│   ');
 
         if (node.isFile) {
-            pp.info(`${prefix}${connector}${node.name}`);
+            pp.info(`${prefix}${connector}${node.index} - ${node.name}`);
         } else {
             pp.info(`${prefix}${connector}${Colors.orange(node.name)}`);
 
@@ -75,7 +80,8 @@ export class SeedManager {
                 fullPath: nodePath,
                 name: cleanFileName(name),
                 isFile: true,
-                type: path.extname(name)
+                type: path.extname(name),
+                index: ++this.fileCount
             };
 
             return node;

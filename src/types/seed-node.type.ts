@@ -4,4 +4,5 @@ export type SeedNode = {
     isFile: boolean;
     children?: Map<string, SeedNode>;
     type?: string;
+    index?: number;
 };

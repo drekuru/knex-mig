@@ -47,7 +47,7 @@ seedCmd
     .aliases(['l', 'ls'])
     .description('List existing seed files')
     .action(Commands.listSeeds)
-    .argument('<path>', 'path to the seed files');
+    .argument('[path]', 'path to the seed files');
 
 seedCmd
     .command('run')
