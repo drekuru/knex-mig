@@ -8,13 +8,29 @@ import { Command } from 'commander';
 import * as Commands from './commands';
 import { REUSABLE_OPTIONS } from './constants';
 import { handleCommaSeparateArgs } from './utils';
-import { ConnectionManager } from './components';
+import { ConnectionManager, FileManager } from './components';
 
 const mig = new Command();
 mig.name('mig').version(pkg.version);
 
 const envCmd = mig.command('env');
 const seedCmd = mig.command('seed');
+
+/**
+ * ------------------------------ HOOKS ----------------------------------
+ */
+// handle loading the files (only for certain commands)
+const commandsToPreLoadFilesFor = ['up', 'down', 'refresh', 'clean', 'state'];
+mig.hook('preAction', async (cmd, action) => {
+    if (commandsToPreLoadFilesFor.includes(action.name())) {
+        await FileManager.init();
+    }
+});
+
+// handle closing the connection
+mig.hook('postAction', async () => {
+    await ConnectionManager.destroy();
+});
 
 /**
  * ---------------------------------------------------------------------------
@@ -119,9 +135,10 @@ mig.command('refresh')
 
 mig.command('state').aliases(['ss', 'status']).action(Commands.getState);
 
-// handle closing the connection
-mig.hook('postAction', async () => {
-    await ConnectionManager.destroy();
-});
+mig.command('clean')
+    .description('Removes the log for migration file(s) from the database - but does not actually rollback the changes')
+    .aliases(['c', 'clear'])
+    .action(Commands.clean)
+    .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs);
 
 mig.parse();

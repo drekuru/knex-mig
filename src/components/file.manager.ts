@@ -10,6 +10,10 @@ export class FileManager {
     private static mapOfExistingMigrationFiles: Map<string, MigFile> = new Map();
     private static indexedMapOfExistingMigrationFiles: Map<number, MigFile> = new Map();
 
+    public static async init(): Promise<void> {
+        await this.loadExistingMigrationFiles();
+    }
+
     private static async loadExistingMigrationFiles(): Promise<void> {
         // load existing migrations
         if (!this.mapOfExistingMigrationFiles.size) {
@@ -40,13 +44,8 @@ export class FileManager {
         }
     }
 
-    public static async prepareFilesToMigrate(
-        filenames: string[],
-        opts: MigrateOptions
-    ): Promise<Map<string, MigFile>> {
+    public static prepareFilesToMigrate(filenames: string[], opts: MigrateOptions): Map<string, MigFile> {
         let filesToMigrate: Map<string, MigFile> = new Map();
-
-        await this.loadExistingMigrationFiles();
 
         // handle all flag
         if (opts.all === true) {
@@ -107,17 +106,15 @@ export class FileManager {
         return filesToMigrate;
     }
 
-    private static getMigrationFile(val: string): MigFile | undefined {
+    public static getMigrationFile(val: string): MigFile | undefined {
         return this.mapOfExistingMigrationFiles.get(val) || this.indexedMapOfExistingMigrationFiles.get(Number(val));
     }
 
-    static async getMigrationFilesMap(): Promise<Map<string, MigFile>> {
-        await this.loadExistingMigrationFiles();
+    static getMigrationFilesMap(): Map<string, MigFile> {
         return this.mapOfExistingMigrationFiles;
     }
 
-    static async getMigrationFilesList(): Promise<MigFile[]> {
-        await this.loadExistingMigrationFiles();
+    static getMigrationFilesList(): MigFile[] {
         return Array.from(this.mapOfExistingMigrationFiles.values());
     }
 
@@ -138,15 +135,13 @@ export class FileManager {
         return { completedMigrations };
     }
 
-    static async getCompletedMigrations(): Promise<MigFile[]> {
-        await this.loadExistingMigrationFiles();
+    static getCompletedMigrations(): MigFile[] {
         return Array.from(this.mapOfExistingMigrationFiles.values()).filter(
             (e) => e.status === MigFileStatus.COMPLETED
         );
     }
 
-    static async getPendingMigrations(): Promise<MigFile[]> {
-        await this.loadExistingMigrationFiles();
+    static getPendingMigrations(): MigFile[] {
         return Array.from(this.mapOfExistingMigrationFiles.values()).filter((e) => e.status === MigFileStatus.PENDING);
     }
 }

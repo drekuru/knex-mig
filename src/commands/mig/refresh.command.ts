@@ -18,10 +18,10 @@ export const refresh = async (
         but: []
     }
 ): Promise<void> => {
-    const filesToRefresh = await FileManager.prepareFilesToMigrate(filenames, options);
+    const filesToRefresh = FileManager.prepareFilesToMigrate(filenames, options);
 
     // for each file to refresh, check if it's up to be migrated down
-    const pendingMigrations = await FileManager.getPendingMigrations();
+    const pendingMigrations = FileManager.getPendingMigrations();
 
     for (const pendingMigration of pendingMigrations) {
         filesToRefresh.delete(pendingMigration.cleanedName);
