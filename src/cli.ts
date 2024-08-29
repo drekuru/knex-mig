@@ -94,6 +94,8 @@ mig.command('up')
     .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
     .option(...(REUSABLE_OPTIONS.upto as [string, string]));
 
+mig.command('state').aliases(['ss', 'status']).action(Commands.getState);
+
 // handle closing the connection
 mig.hook('postAction', async () => {
     await ConnectionManager.destroy();

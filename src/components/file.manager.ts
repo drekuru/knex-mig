@@ -9,6 +9,7 @@ export class FileManager {
     private static mapOfExistingMigrationFiles: Map<string, MigFile> = new Map();
     private static indexedMapOfExistingMigrationFiles: Map<number, MigFile> = new Map();
     private static completedMigrations: KnexFileType[] = [];
+    private static pendingMigrations: KnexFileType[] = [];
 
     static {
         this.loadExistingMigrationFiles();
@@ -137,5 +138,23 @@ export class FileManager {
         }
 
         return this.completedMigrations;
+    }
+
+    static async getPendingMigrations(): Promise<KnexFileType[]> {
+        if (!this.pendingMigrations.length) {
+            const [, pending] = await ConnectionManager.knex.migrate.list();
+
+            this.pendingMigrations = pending.map((e) => {
+                const cleanedName = cleanFileName(e.name);
+                const knexFile: KnexFileType = {
+                    cleanedName,
+                    fullName: e.name
+                };
+
+                return knexFile;
+            });
+        }
+
+        return this.pendingMigrations;
     }
 }
