@@ -2,19 +2,19 @@ import { existsSync, readdirSync } from 'fs';
 import { EnvManager } from './env.manager';
 import chalk from 'chalk';
 import { cleanFileName } from '../utils';
-import { MigrateOptions, MigFile, KnexFileType } from '../types';
+import { MigrateOptions, MigFile, KnexFileType, MigFileStatus } from '../types';
 import { ConnectionManager } from './connection.manager';
 
+// TODO: refactor this class to be more modular
 export class FileManager {
     private static mapOfExistingMigrationFiles: Map<string, MigFile> = new Map();
     private static indexedMapOfExistingMigrationFiles: Map<number, MigFile> = new Map();
-    private static completedMigrations: KnexFileType[] = [];
 
-    static {
-        this.loadExistingMigrationFiles();
+    public static async init(): Promise<void> {
+        await this.loadExistingMigrationFiles();
     }
 
-    private static loadExistingMigrationFiles(): void {
+    private static async loadExistingMigrationFiles(): Promise<void> {
         // load existing migrations
         if (!this.mapOfExistingMigrationFiles.size) {
             const pathToMigrations = EnvManager.get().MIGRATIONS_DIR;
@@ -25,26 +25,26 @@ export class FileManager {
             }
 
             const files = readdirSync(pathToMigrations);
+            const { completedMigrations } = await this.getMigrationStateInDb();
 
             for (let i = 0; i < files.length; i++) {
                 const cleanName = cleanFileName(files[i]);
+                const index = i + 1;
 
                 const migFile: MigFile = {
-                    index: i,
+                    index,
                     fullName: files[i],
-                    cleanedName: cleanName
+                    cleanedName: cleanName,
+                    status: completedMigrations.has(cleanName) ? MigFileStatus.COMPLETED : MigFileStatus.PENDING
                 };
 
                 this.mapOfExistingMigrationFiles.set(cleanName, migFile);
-                this.indexedMapOfExistingMigrationFiles.set(i, migFile);
+                this.indexedMapOfExistingMigrationFiles.set(index, migFile);
             }
         }
     }
 
-    public static async prepareFilesToMigrate(
-        filenames: string[],
-        opts: MigrateOptions
-    ): Promise<Map<string, MigFile>> {
+    public static prepareFilesToMigrate(filenames: string[], opts: MigrateOptions): Map<string, MigFile> {
         let filesToMigrate: Map<string, MigFile> = new Map();
 
         // handle all flag
@@ -103,39 +103,45 @@ export class FileManager {
             }
         }
 
-        // get existing migrations and remove them from the list
-        const completedMigrations = await this.getCompletedMigrations();
-
-        for (const completedMigration of completedMigrations) {
-            filesToMigrate.delete(completedMigration.cleanedName);
-        }
-
         return filesToMigrate;
     }
 
-    private static getMigrationFile(val: string): MigFile | undefined {
+    public static getMigrationFile(val: string): MigFile | undefined {
         return this.mapOfExistingMigrationFiles.get(val) || this.indexedMapOfExistingMigrationFiles.get(Number(val));
     }
 
-    static getMigrationFiles(): MigFile[] {
+    static getMigrationFilesMap(): Map<string, MigFile> {
+        return this.mapOfExistingMigrationFiles;
+    }
+
+    static getMigrationFilesList(): MigFile[] {
         return Array.from(this.mapOfExistingMigrationFiles.values());
     }
 
-    static async getCompletedMigrations(): Promise<KnexFileType[]> {
-        if (!this.completedMigrations.length) {
-            const [completed] = await ConnectionManager.knex.migrate.list();
+    private static async getMigrationStateInDb(): Promise<{
+        completedMigrations: Map<string, KnexFileType>;
+    }> {
+        const completedMigrations = new Map<string, KnexFileType>();
+        const [completed] = await ConnectionManager.knex.migrate.list();
 
-            this.completedMigrations = completed.map((e) => {
-                const cleanedName = cleanFileName(e.name);
-                const knexFile: KnexFileType = {
-                    cleanedName,
-                    fullName: e.name
-                };
-
-                return knexFile;
+        for (const e of completed) {
+            const cleanedName = cleanFileName(e.name);
+            completedMigrations.set(cleanedName, {
+                cleanedName,
+                fullName: e.name
             });
         }
 
-        return this.completedMigrations;
+        return { completedMigrations };
+    }
+
+    static getCompletedMigrations(): MigFile[] {
+        return Array.from(this.mapOfExistingMigrationFiles.values()).filter(
+            (e) => e.status === MigFileStatus.COMPLETED
+        );
+    }
+
+    static getPendingMigrations(): MigFile[] {
+        return Array.from(this.mapOfExistingMigrationFiles.values()).filter((e) => e.status === MigFileStatus.PENDING);
     }
 }

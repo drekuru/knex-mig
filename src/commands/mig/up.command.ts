@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { ConnectionManager, FileManager } from '../../components';
 import { MigrateOptions } from '../../types';
+import { pp } from '../../utils';
 
 /**
  * @description Handles migrating up
@@ -17,10 +18,17 @@ export const migUp = async (
         but: []
     }
 ): Promise<void> => {
-    const filesToMigrate = await FileManager.prepareFilesToMigrate(filenames || [], options);
+    const filesToMigrate = FileManager.prepareFilesToMigrate(filenames || [], options);
+
+    // get existing migrations and remove them from the list
+    const completedMigrations = FileManager.getCompletedMigrations();
+
+    for (const completedMigration of completedMigrations) {
+        filesToMigrate.delete(completedMigration.cleanedName);
+    }
 
     if (filesToMigrate.size === 0) {
-        console.log(chalk.yellow('No files to migrate'));
+        pp.warn('No files to migrate');
         return;
     }
 
@@ -29,16 +37,18 @@ export const migUp = async (
     await knex
         .transaction(async (trx) => {
             for (const filename of filesToMigrate.values()) {
-                console.log(`Migrating up ${filename.cleanedName}`);
+                pp.warn(`Migrating up [${chalk.greenBright(filename.cleanedName)}]`);
                 await trx.migrate.up({
                     name: filename.fullName
                 });
             }
 
+            pp.info('Migrated up successfully!');
+
             return trx;
         })
         .catch((err) => {
-            console.log(chalk.redBright('Error migrating up'));
-            console.log(err);
+            pp.error('Error migrating up');
+            pp.error(err);
         });
 };

@@ -1,6 +1,6 @@
 import { EnvManager, PathManager } from '../../components';
 import { AddEnvOptions } from '../../types';
-import { getFileName } from '../../utils';
+import { getFileName, pp } from '../../utils';
 import chalk from 'chalk';
 import { copyFileSync, existsSync } from 'fs';
 import path from 'path';
@@ -17,14 +17,14 @@ export const addEnv = (
     const exists = existsSync(fullPath);
 
     if (!exists) {
-        console.log(chalk.red(`Env file not found at ${fullPath}`));
+        pp.error(`Env file not found at ${fullPath}`);
         return;
     }
 
     const fileName = getFileName(name || path.basename(fullPath), true);
 
     if (!fileName) {
-        console.log(chalk.red(`Invalid name provided: ${name}`));
+        pp.error(`Invalid name provided: ${name}`);
         return;
     }
 
@@ -32,7 +32,7 @@ export const addEnv = (
     const existingFiles = EnvManager.listAll();
 
     if (existingFiles.includes(fileName) && options.overwrite !== true) {
-        console.log(chalk.red(`Env file with name ${chalk.redBright(fileName)} already exists`));
+        pp.error(`Env file with name ${chalk.redBright(fileName)} already exists`);
         return;
     }
 
@@ -41,7 +41,7 @@ export const addEnv = (
 
     copyFileSync(fullPath, newFilePath);
 
-    console.log(chalk.green(`${fileName} added`));
+    pp.info(`${fileName} added`);
 
     if (options.setCurrent === true) {
         setEnv(fileName);

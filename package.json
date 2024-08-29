@@ -32,10 +32,12 @@
     "rebuild": "npm run clean && npm run build"
   },
   "dependencies": {
+    "@types/luxon": "^3.4.2",
     "chalk": "^4.1.2",
     "commander": "^10.0.1",
     "dotenv": "^16.0.0",
     "knex": "^3.0.1",
+    "luxon": "^3.5.0",
     "pg": "^8.11.3"
   },
   "engines": {
