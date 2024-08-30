@@ -121,9 +121,10 @@ mig.command('make')
     .option('-e, --extension [name]', 'extension of the file to create', '.js');
 
 mig.command('ping')
-    .description('Checks the connection to the database')
+    .aliases(['p', 'connect', 'whoami'])
+    .description('Checks the connection to the database - if used with verbose, it will print the connection details')
     .action(Commands.ping)
-    .aliases(['p', 'connect']);
+    .option(...(REUSABLE_OPTIONS.verbose as [string, string]));
 
 mig.command('up')
     .aliases(['u'])
