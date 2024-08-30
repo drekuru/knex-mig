@@ -1,12 +1,12 @@
 import { ContextManager, EnvManager } from '../../components';
-import chalk from 'chalk';
 import { execSync } from 'child_process';
+import { pp } from '../../utils';
 
 export const editEnv = (name?: string | null): void => {
     name = name ?? ContextManager.ctx.envName;
 
     if (!name) {
-        console.log(chalk.red('No env name provided'));
+        pp.error('No env name provided');
         return;
     }
 

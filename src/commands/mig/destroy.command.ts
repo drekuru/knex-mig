@@ -6,7 +6,7 @@ import { createInterface } from 'readline/promises';
 /**
  * @description Gets all schemas from the database and drops them - hard reset pretty much
  */
-export const destroy = async ({ verbose = false }): Promise<void> => {
+export const destroy = async (): Promise<void> => {
     try {
         const knex = ConnectionManager.knex;
 
@@ -33,10 +33,8 @@ export const destroy = async ({ verbose = false }): Promise<void> => {
 
             const schemaNames = schemasToDrop.map((row) => row.schema_name);
 
-            if (verbose) {
-                pp.info('Schemas to drop:');
-                pp.info(schemaNames.join('\n'));
-            }
+            pp.debug('Schemas to drop:');
+            pp.debug(schemaNames.join('\n'));
 
             const rl = createInterface({
                 input: process.stdin,

@@ -1,7 +1,7 @@
 import { PathManager } from './path.manager';
-import chalk from 'chalk';
 import fs from 'fs';
 import { Context } from '../types';
+import { pp } from '../utils';
 
 export class ContextManager {
     private static context: Context;
@@ -15,7 +15,7 @@ export class ContextManager {
 
     private static load(): Context {
         if (!fs.existsSync(PathManager.CONTEXT_FILE_PATH)) {
-            console.log(chalk.red('context file not found, run `mig setup` to create one'));
+            pp.error('context file not found, run `mig setup` to create one');
             process.exit(1);
         }
 

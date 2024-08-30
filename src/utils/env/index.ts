@@ -1,11 +1,12 @@
 import chalk from 'chalk';
+import { pp } from '../logger';
 
 export const safeRead = (key: string): string => {
     const value = process.env[key];
 
     if (!value) {
-        console.log(chalk.red(`Missing env variable: ${chalk.redBright(key)}`));
-        console.log(chalk.yellow(`Please set the ${chalk.yellowBright(key)} environment variable`));
+        pp.error(`Missing env variable: ${chalk.redBright(key)}`);
+        pp.info(`Please set the ${chalk.yellowBright(key)} environment variable`);
         process.exit(1);
     }
 
