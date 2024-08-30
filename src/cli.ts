@@ -42,7 +42,12 @@ const seedCmd = mig.command('seed');
 //     .action(Commands.makeSeed)
 //     .argument('<filename>', 'name of the file to create');
 
-seedCmd.command('list').aliases(['l', 'ls']).description('List existing seed files').action(Commands.listSeeds);
+seedCmd
+    .command('list')
+    .aliases(['l', 'ls'])
+    .description('List existing seed files')
+    .action(Commands.listSeeds)
+    .argument('[path]', 'path to the seed files');
 
 seedCmd
     .command('run')
