@@ -1,10 +1,9 @@
 import { EnvManager } from '../../components';
-import { printListStyle } from '../../utils';
-import chalk from 'chalk';
+import { pp, printListStyle } from '../../utils';
 
 export const listEnvs = (): void => {
     const envs = EnvManager.listAll();
 
-    console.log('Available envs:');
-    envs.forEach((env) => console.log(chalk.yellow(printListStyle(env))));
+    pp.log('Available envs:');
+    envs.forEach((env) => pp.info(printListStyle(env)));
 };

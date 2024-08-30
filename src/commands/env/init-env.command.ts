@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import chalk from 'chalk';
+import { pp } from '../../utils';
 
 /**
  * @description Create an empty .env file with all the required keys
@@ -12,8 +12,8 @@ export const initEnv = (name?: string | null): void => {
 
     // check if the file exists
     if (fs.existsSync(envPath)) {
-        console.log(chalk.red(`File ${fileName} already exists`));
-        process.exit(1);
+        pp.error(`File ${fileName} already exists`);
+        return;
     }
 
     // create the file

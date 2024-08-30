@@ -1,8 +1,10 @@
-import { ConnectionManager } from '../../components';
+import { ConnectionManager, PathManager } from '../../components';
 import { pp } from '../../utils';
 
 export const setup = async (): Promise<void> => {
     try {
+        PathManager.setupPaths();
+
         const knex = ConnectionManager.knex;
 
         pp.debug(`Schema set in config: ${process.env.MIGRATIONS_TABLE_SCHEMA}`);

@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { PathManager } from './path.manager';
 import dotenv from 'dotenv';
-import { getFileName } from '../utils';
+import { getFileName, pp } from '../utils';
 
 export class EnvManager {
     private static env: Record<string, string>;
@@ -27,7 +27,7 @@ export class EnvManager {
 
         const envPath = this.validateENVPath(envName);
 
-        console.log(chalk.bold(chalk.magenta(`CURRENT ENV: ${chalk.magentaBright(envName)}`)));
+        pp.log(chalk.bold(chalk.magenta(`CURRENT ENV: ${chalk.magentaBright(envName)}`)));
 
         const data = dotenv.parse(fs.readFileSync(envPath));
 
@@ -43,14 +43,14 @@ export class EnvManager {
      */
     static validateENVPath(envName: string | null): string {
         if (!envName) {
-            console.log(chalk.red('Env name not provided. Maybe try mig env set <envName>'));
+            pp.error('Env name not provided. Maybe try mig env set <envName>');
             process.exit(1);
         }
 
         const envFilePath = path.join(PathManager.ENVS_DIR_PATH, `${envName}.env`);
 
         if (!fs.existsSync(envFilePath)) {
-            console.log(chalk.red(`Env ${envName} not found at ${envFilePath}`));
+            pp.error(`Env ${envName} not found at ${envFilePath}`);
             process.exit(1);
         }
 
