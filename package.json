@@ -1,5 +1,5 @@
 {
-  "name": "omg-mig",
+  "name": "mig",
   "version": "0.0.1",
   "description": "Relational Database migration tool - built on top of knex.js",
   "main": "./dist/cli.js",
@@ -18,7 +18,7 @@
   "author": "Andrey Kurudimov",
   "license": "GPL-2.0-only",
   "bin": {
-    "omig": "./dist/cli.js"
+    "mig": "./dist/cli.js"
   },
   "scripts": {
     "clean": "rm -rf ./dist",
@@ -26,10 +26,8 @@
     "lint": "eslint --fix .",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "build": "tsc -p tsconfig.json",
-    "postinstall": "node ./dist/setup/post-install.js",
-    "omig": "node ./dist/cli.js",
     "rebuild": "npm run clean && npm run build",
-    "test":"echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky"
   },
   "dependencies": {
