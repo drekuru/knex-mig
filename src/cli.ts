@@ -7,7 +7,7 @@ const pkg = require('../package.json');
 import { Command } from 'commander';
 import * as Commands from './commands';
 import { REUSABLE_OPTIONS } from './constants';
-import { handleCommaSeparateArgs } from './utils';
+import { handleCommaSeparateArgs, pp } from './utils';
 import { ConnectionManager, FileManager } from './components';
 
 const mig = new Command();
@@ -19,8 +19,10 @@ const envCmd = mig.command('env');
  * ------------------------------ HOOKS ----------------------------------
  */
 // handle loading the files (only for certain commands)
-const commandsToPreLoadFilesFor = ['up', 'down', 'refresh', 'clean', 'state'];
+const commandsToPreLoadFilesFor = ['up', 'down', 'refresh', 'clean', 'state', 'destroy'];
 mig.hook('preAction', async (cmd, action) => {
+    action.getOptionValue('verbose') && pp.debugOn();
+
     if (commandsToPreLoadFilesFor.includes(action.name())) {
         await FileManager.init();
     }
@@ -124,6 +126,7 @@ mig.command('ping')
     .aliases(['p', 'connect']);
 
 mig.command('up')
+    .aliases(['u'])
     .description('Run migrations')
     .action(Commands.migUp)
     .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs)
@@ -135,6 +138,7 @@ mig.command('up')
     .option(...(REUSABLE_OPTIONS.upto as [string, string]));
 
 mig.command('down')
+    .aliases(['d'])
     .description('Rollback migrations')
     .action(Commands.migDown)
     .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs)
@@ -164,5 +168,17 @@ mig.command('clean')
     .aliases(['c', 'clear'])
     .action(Commands.clean)
     .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs);
+
+mig.command('destroy')
+    .aliases(['nuke'])
+    .description('Drops all schemas except information_schema and anything that starts with pg_')
+    .action(Commands.destroy)
+    .option(...(REUSABLE_OPTIONS.verbose as [string, string]));
+
+mig.command('setup')
+    .aliases(['s', 'init', 'i'])
+    .description('Sets up the database - this is typically needed if you nuke your database')
+    .action(Commands.setup)
+    .option(...(REUSABLE_OPTIONS.verbose as [string, string]));
 
 mig.parse();

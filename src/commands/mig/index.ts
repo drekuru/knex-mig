@@ -5,3 +5,5 @@ export * from './get-state.command';
 export * from './down.command';
 export * from './refresh.command';
 export * from './clean.command';
+export * from './destroy.command';
+export * from './setup.command';
