@@ -1,3 +1,5 @@
+import { SeedType } from '../../types';
+
 /**
  * Custom arg parser for comma separated args
  * @description Handles parsing args
@@ -116,4 +118,17 @@ export const isAllUpperCaseSnakeCase = (str: string): boolean => {
     }
 
     return true;
+};
+
+const staticTypes = ['.json'];
+const dynamicTypes = ['.js'];
+
+export const getSeedType = (extension: string): SeedType => {
+    if (staticTypes.includes(extension)) {
+        return SeedType.STATIC;
+    } else if (dynamicTypes.includes(extension)) {
+        return SeedType.DYNAMIC;
+    }
+
+    return SeedType.UNKNOWN;
 };

@@ -1,9 +1,10 @@
 import chalk from 'chalk';
-import { cleanFileName, Colors, pp } from '../utils';
+import { cleanFileName, Colors, getSeedType, pp } from '../utils';
 import { EnvManager } from './env.manager';
 import { existsSync, lstatSync, readdirSync } from 'fs';
-import { SeedNode } from '../types';
+import { SeedNode, SeedType } from '../types';
 import path from 'path';
+import { Knex } from 'knex';
 
 export class SeedManager {
     private static tree: SeedNode;
@@ -82,12 +83,14 @@ export class SeedManager {
 
             return node;
         } else {
+            const extension = path.extname(name);
             const node: SeedNode = {
                 fullPath: nodePath,
                 name: cleanFileName(name),
                 isFile: true,
-                type: path.extname(name),
-                index: ++this.fileCount
+                extension,
+                index: ++this.fileCount,
+                seedType: getSeedType(extension)
             };
 
             return node;
@@ -111,5 +114,43 @@ export class SeedManager {
         }
 
         return currentNode;
+    }
+
+    static async runSeed(seed: SeedNode, trx: Knex.Transaction): Promise<void> {
+        pp.info(`Running seed [${seed.name}]`);
+
+        if (seed.seedType === SeedType.DYNAMIC) {
+            await trx.transaction(async (trx) => {
+                const seedFn = require(seed.fullPath);
+                await seedFn.seed(trx);
+            });
+        } else if (seed.seedType === SeedType.STATIC) {
+            await this.handleStaticSeed(seed, trx);
+        } else {
+            pp.error(`Seed type not supported for [${seed.name}]`);
+            return;
+        }
+    }
+
+    private static async handleStaticSeed(seed: SeedNode, trx: Knex.Transaction): Promise<void> {
+        const seedJson = require(seed.fullPath);
+
+        // if its missing fields, throw an error
+        for (const field of ['schema', 'table', 'unique', 'data']) {
+            if (!seedJson[field]) {
+                pp.error(`Seed [${seed.name}] is missing field [${field}]`);
+                return;
+            }
+        }
+
+        await trx(seedJson.table)
+            .withSchema(seedJson.schema)
+            .insert(seedJson.data)
+            .onConflict(seedJson.unique)
+            .merge()
+            .catch((err) => {
+                pp.error(`Error running seed [${seed.name}]`);
+                pp.error(err);
+            });
     }
 }
