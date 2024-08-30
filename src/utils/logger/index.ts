@@ -3,11 +3,12 @@ import { DateTime } from 'luxon';
 
 // Pretty print
 export const pp = {
+    debugEnabled: false,
     log: (message: any = '', color: Chalk = chalk.white): void => {
         console.log(color(message));
     },
     debug: (message?: string, color: Chalk = chalk.blue): void => {
-        pp.log(`[${DateTime.utc.toString()}] ${message}`, color);
+        if (pp.debugEnabled) pp.log(`[${DateTime.utc().toString()}] ${message}`, color);
     },
     info: (message?: string, color: Chalk = chalk.green): void => {
         pp.log(message, color);
@@ -17,6 +18,10 @@ export const pp = {
     },
     error: (message?: string, color: Chalk = chalk.red): void => {
         pp.log(message, color);
+    },
+    debugOn: (): void => {
+        pp.debugEnabled = true;
+        pp.debug('Debug Mode Enabled');
     }
 };
 
