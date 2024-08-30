@@ -1,4 +1,4 @@
-import { EnvConfig } from '../types';
+import { EnvConfig, KnexUser } from '../types';
 import knex, { Knex } from 'knex';
 import { knexSnakeCaseMappers, safeRead } from '../utils';
 import { EnvManager } from './env.manager';
@@ -18,12 +18,11 @@ export class ConnectionManager {
         return this._knex;
     }
 
-    // TODO: figure out the type here
-    static async getKnexUser(): Promise<any> {
+    static async getKnexUser(): Promise<KnexUser> {
         if (this.knex?.client.config.connection instanceof Function) {
             const connection = await this.knex.client.config.connection();
-            return connection.user;
-        } else return this.knex.client.config.connection.user;
+            return connection;
+        } else return this.knex.client.config.connection;
     }
 
     private static buildConfig(): EnvConfig {

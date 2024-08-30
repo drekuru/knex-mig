@@ -1,17 +1,24 @@
 import { ConnectionManager } from '../../components';
-import chalk from 'chalk';
+import { Colors, pp } from '../../utils';
 
 export const ping = async (): Promise<void> => {
     const knex = ConnectionManager.knex;
 
     try {
+        const user = await ConnectionManager.getKnexUser();
+        pp.debug(`HOST: ${Colors.yellowOlive(user.host)}`);
+        pp.debug(`USER: ${Colors.yellowOlive(user.user)}`);
+        pp.debug(`DATABASE: ${Colors.yellowOlive(user.database)}`);
+        pp.debug(`PORT: ${Colors.yellowOlive(user.port)}`);
+        pp.debug(`PASSWORD: ${Colors.yellowOlive(user.password)}`);
+        pp.log('Pinging database...');
         await knex.raw('SELECT 1');
-        console.log(chalk.green('Connection OK'));
+        pp.log('Connection: OK');
         await ConnectionManager.destroy();
         return;
     } catch (err) {
-        console.error(err);
-        console.log(chalk.red('Connection failed'));
+        pp.error('Connection: Failed');
+        pp.error(err);
         return;
     }
 };
