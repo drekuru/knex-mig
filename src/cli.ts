@@ -178,8 +178,13 @@ mig.command('destroy')
 
 mig.command('setup')
     .aliases(['s', 'init', 'i'])
-    .description('Sets up the database - this is typically needed if you nuke your database')
+    .description('Sets up mig and optionally initializes the database')
     .action(Commands.setup)
-    .option(...(REUSABLE_OPTIONS.verbose as [string, string]));
+    .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
+    .option(
+        '-d, --init-db',
+        'initialize the database with schemas (this is typically needed if you nuke your database)',
+        false
+    );
 
 mig.parse();

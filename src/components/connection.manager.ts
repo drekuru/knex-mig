@@ -8,8 +8,8 @@ import { EnvManager } from './env.manager';
  * // TODO: make this more dynamic and configurable
  */
 export class ConnectionManager {
-    private static _config: EnvConfig;
-    private static _knex: Knex<any, unknown[]>;
+    private static _config: EnvConfig | undefined;
+    private static _knex: Knex<any, unknown[]> | undefined;
 
     static get knex(): Knex<any, unknown[]> {
         if (!this._knex) {
@@ -90,6 +90,6 @@ export class ConnectionManager {
     }
 
     static async destroy(): Promise<void> {
-        if (this.knex) await this.knex.destroy();
+        if (this._knex) await this.knex.destroy();
     }
 }
