@@ -123,6 +123,7 @@ export class SeedManager {
             await trx.transaction(async (trx) => {
                 const seedFn = require(seed.fullPath);
                 await seedFn.seed(trx);
+                pp.log(`Seed [${seed.name}] ran successfully`);
             });
         } else if (seed.seedType === SeedType.STATIC) {
             await this.handleStaticSeed(seed, trx);

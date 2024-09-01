@@ -46,7 +46,7 @@ export class ConnectionManager {
             SSL_CERT: process.env.SSL_CERT,
             SSL_KEY: process.env.SSL_KEY,
             SSL_REJECT_UNAUTHORIZED: process.env.SSL_REJECT_UNAUTHORIZED === 'true',
-            MIGRATIONS_SCHEMA: process.env.MIGRATIONS_SCHEMA,
+            MIGRATIONS_SCHEMA: process.env.MIGRATIONS_TABLE_SCHEMA || process.env.MIGRATIONS_SCHEMA,
             MIGRATIONS_DIR: safeRead('MIGRATIONS_DIR'),
             SEARCH_PATH: searchPath
         };
@@ -63,7 +63,7 @@ export class ConnectionManager {
 
     private static mapEnvsToKnexConfig(): Knex.Config {
         const config = this.config;
-        return {
+        const knexConfig: Knex.Config = {
             client: config.CLIENT,
             connection: {
                 host: config.HOST,
@@ -87,6 +87,17 @@ export class ConnectionManager {
             searchPath: config.SEARCH_PATH,
             ...knexSnakeCaseMappers()
         };
+
+        if (config.SSL_ENABLED) {
+            knexConfig.connection!['ssl'] = {
+                rejectUnauthorized: config.SSL_REJECT_UNAUTHORIZED || true,
+                ca: config.SSL_CA,
+                cert: config.SSL_CERT,
+                key: config.SSL_KEY
+            };
+        }
+
+        return knexConfig;
     }
 
     static async destroy(): Promise<void> {
