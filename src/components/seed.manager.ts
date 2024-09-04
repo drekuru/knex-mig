@@ -127,6 +127,7 @@ export class SeedManager {
             });
         } else if (seed.seedType === SeedType.STATIC) {
             await this.handleStaticSeed(seed, trx);
+            pp.log(`Seed [${seed.name}] ran successfully`);
         } else {
             pp.error(`Seed type not supported for [${seed.name}]`);
             return;
@@ -144,7 +145,7 @@ export class SeedManager {
             }
         }
 
-        await trx(seedJson.table)
+        const res = await trx(seedJson.table)
             .withSchema(seedJson.schema)
             .insert(seedJson.data)
             .onConflict(seedJson.unique)
@@ -153,5 +154,7 @@ export class SeedManager {
                 pp.error(`Error running seed [${seed.name}]`);
                 pp.error(err);
             });
+
+        pp.debug(res);
     }
 }

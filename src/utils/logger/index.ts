@@ -7,7 +7,7 @@ export const pp = {
     log: (message: any = '', color: Chalk = chalk.white): void => {
         console.log(color(message));
     },
-    debug: (message?: string, color: Chalk = chalk.blue): void => {
+    debug: (message?: string | any, color: Chalk = chalk.blue): void => {
         if (pp.debugEnabled) pp.log(`[${DateTime.utc().toString()}] ${message}`, color);
     },
     info: (message?: string, color: Chalk = chalk.green): void => {
