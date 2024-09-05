@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { cleanFileName } from '../utils';
 import { MigrateOptions, MigFile, KnexFileType, MigFileStatus } from '../types';
 import { ConnectionManager } from './connection.manager';
+import path from 'path';
 
 // TODO: refactor this class to be more modular
 export class FileManager {
@@ -24,16 +25,24 @@ export class FileManager {
                 process.exit(1);
             }
 
-            const files = readdirSync(pathToMigrations);
+            const files = readdirSync(pathToMigrations, { withFileTypes: true });
             const { completedMigrations } = await this.getMigrationStateInDb();
 
             for (let i = 0; i < files.length; i++) {
-                const cleanName = cleanFileName(files[i]);
+                if (files[i].isDirectory()) {
+                    continue;
+                }
+                // if not extension - it's a directory
+                const cleanName = cleanFileName(files[i].name);
+
+                // accounting for this because parentPath doesn't exist in Node <v20.12.0
+                const basePath = files[i].parentPath || files[i].path;
+                const fullPath = path.resolve(basePath, files[i].name);
                 const index = i + 1;
 
                 const migFile: MigFile = {
                     index,
-                    fullName: files[i],
+                    fullName: fullPath,
                     cleanedName: cleanName,
                     status: completedMigrations.has(cleanName) ? MigFileStatus.COMPLETED : MigFileStatus.PENDING
                 };

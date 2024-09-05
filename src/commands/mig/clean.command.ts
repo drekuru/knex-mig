@@ -1,9 +1,7 @@
 import { ConnectionManager, FileManager } from '../../components';
-import { MakeFileOptions, MigFileStatus } from '../../types';
-import { getFileName, pp } from '../../utils';
+import { MigFileStatus } from '../../types';
+import { pp } from '../../utils';
 import chalk from 'chalk';
-import path from 'path';
-
 /**
  * @description Creates a new migration file, following this naming convention: `timestamp_migration_name`
  * if no extension is provided, it will default to `.js`, otherwise it will use the provided extension.
