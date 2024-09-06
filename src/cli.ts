@@ -104,10 +104,10 @@ envCmd
     .option(...(REUSABLE_OPTIONS.verbose as [string, string]));
 
 envCmd
-    .command('init')
-    .aliases(['i', 'create'])
-    .description('Creates a new env file')
-    .action(Commands.initEnv)
+    .command('generate')
+    .aliases(['g', 'gen', 'create', 'init'])
+    .description('Generates a new env file with empty values')
+    .action(Commands.generateEnv)
     .argument('[name]', 'name of the file to create');
 
 /**

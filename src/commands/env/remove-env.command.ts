@@ -1,13 +1,13 @@
 import { ContextManager, EnvManager } from '../../components';
 import { unlinkSync } from 'fs';
-import { pp } from '../../utils';
+import { Colors, pp } from '../../utils';
 
 export const removeEnv = (name: string): void => {
     const filePath = EnvManager.validateENVPath(name);
 
     unlinkSync(filePath);
 
-    pp.log(`Env ${name} removed`);
+    pp.warn(`Env [${Colors.orange(name)}] removed`);
 
     const { envName } = ContextManager.ctx;
 
