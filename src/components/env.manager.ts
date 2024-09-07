@@ -47,7 +47,9 @@ export class EnvManager {
             process.exit(1);
         }
 
-        const envFilePath = path.join(PathManager.ENVS_DIR_PATH, `${envName}.env`);
+        if (!envName.endsWith('.env')) envName = `${envName}.env`;
+
+        const envFilePath = path.join(PathManager.ENVS_DIR_PATH, envName);
 
         if (!fs.existsSync(envFilePath)) {
             pp.error(`Env ${envName} not found at ${envFilePath}`);

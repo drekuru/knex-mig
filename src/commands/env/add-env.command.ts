@@ -32,7 +32,8 @@ export const addEnv = (
     const existingFiles = EnvManager.listAll();
 
     if (existingFiles.includes(fileName) && options.overwrite !== true) {
-        pp.error(`Env file with name ${chalk.redBright(fileName)} already exists`);
+        pp.error(`Env file with name [${chalk.redBright(fileName)}] already exists`);
+        pp.warn('If you would like to overwrite it run this command with the "--overwrite" flag');
         return;
     }
 
@@ -41,7 +42,7 @@ export const addEnv = (
 
     copyFileSync(fullPath, newFilePath);
 
-    pp.info(`${fileName} added`);
+    pp.info(`[${fileName}] added to mig environment`);
 
     if (options.setCurrent === true) {
         setEnv(fileName);

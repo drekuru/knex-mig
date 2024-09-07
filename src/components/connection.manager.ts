@@ -27,7 +27,7 @@ export class ConnectionManager {
 
     private static buildConfig(): EnvConfig {
         EnvManager.get();
-        const searchPath = safeRead('SEARCH_PATH')?.split(',');
+        const searchPath = process.env.SEARCH_PATH?.split(',');
 
         const config = {
             DATABASE: safeRead('DATABASE'),
@@ -37,16 +37,15 @@ export class ConnectionManager {
             APP_NAME: process.env.APP_NAME,
             CLIENT: safeRead('CLIENT'),
             PORT: Number(safeRead('PORT')),
-            CONNECTION_TIMEOUT: Number(process.env.CONNECTION_TIMEOUT || '60000'),
+            ACQUIRE_CONNECTION_TIMEOUT: Number(process.env.ACQUIRE_CONNECTION_TIMEOUT || '60000'),
             IDLE_IN_TRANSACTION_TIMEOUT: Number(process.env.IDLE_IN_TRANSACTION_TIMEOUT || '15000'),
-            MAX_POOL_SIZE: Number(process.env.MAX_POOL_SIZE || '10'),
+            MAX_POOL_SIZE: Number(process.env.MAX_POOL_SIZE || '1'),
             MIN_POOL_SIZE: Number(process.env.MIN_POOL_SIZE || '0'),
-            SSL_ENABLED: process.env.SSL_ENABLED === 'true',
             SSL_CA: process.env.SSL_CA,
             SSL_CERT: process.env.SSL_CERT,
             SSL_KEY: process.env.SSL_KEY,
             SSL_REJECT_UNAUTHORIZED: process.env.SSL_REJECT_UNAUTHORIZED === 'true',
-            MIGRATIONS_SCHEMA: process.env.MIGRATIONS_TABLE_SCHEMA || process.env.MIGRATIONS_SCHEMA,
+            MIGRATIONS_TABLE_SCHEMA: process.env.MIGRATIONS_TABLE_SCHEMA,
             MIGRATIONS_DIR: safeRead('MIGRATIONS_DIR'),
             SEARCH_PATH: searchPath
         };
@@ -76,19 +75,19 @@ export class ConnectionManager {
                 idle_in_transaction_session_timeout: config.IDLE_IN_TRANSACTION_TIMEOUT
             },
             pool: {
-                acquireTimeoutMillis: config.CONNECTION_TIMEOUT,
+                acquireTimeoutMillis: config.ACQUIRE_CONNECTION_TIMEOUT,
                 min: config.MIN_POOL_SIZE,
                 max: config.MAX_POOL_SIZE
             },
             migrations: {
                 directory: config.MIGRATIONS_DIR,
-                schemaName: config.MIGRATIONS_SCHEMA
+                schemaName: config.MIGRATIONS_TABLE_SCHEMA
             },
             searchPath: config.SEARCH_PATH,
             ...knexSnakeCaseMappers()
         };
 
-        if (config.SSL_ENABLED) {
+        if (config.SSL_REJECT_UNAUTHORIZED) {
             knexConfig.connection!['ssl'] = {
                 rejectUnauthorized: config.SSL_REJECT_UNAUTHORIZED || true,
                 ca: config.SSL_CA,

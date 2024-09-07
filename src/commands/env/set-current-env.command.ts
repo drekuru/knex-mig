@@ -1,10 +1,10 @@
 import { ContextManager, EnvManager } from '../../components';
-import chalk from 'chalk';
+import { Colors, pp } from '../../utils';
 
 export const setEnv = (name: string): void => {
     EnvManager.validateENVPath(name);
 
     ContextManager.update('envName', name);
 
-    console.log(chalk.green(`Current environment set to: ${chalk.greenBright(name)}`));
+    pp.info(Colors.orange(`Set current environment to: [${Colors.indianRed(name)}]`));
 };

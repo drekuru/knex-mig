@@ -4,4 +4,4 @@ export * from './remove-env.command';
 export * from './set-current-env.command';
 export * from './edit-env.command';
 export * from './add-env.command';
-export * from './init-env.command';
+export * from './generate-env.command';

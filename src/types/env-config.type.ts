@@ -7,15 +7,14 @@ export type EnvConfig = {
     DATABASE: string;
     APP_NAME?: string;
     IDLE_IN_TRANSACTION_TIMEOUT?: number;
-    SSL_ENABLED?: boolean;
     SSL_REJECT_UNAUTHORIZED?: boolean;
     SSL_CA?: string;
     SSL_CERT?: string;
     SSL_KEY?: string;
     MAX_POOL_SIZE?: number;
     MIN_POOL_SIZE?: number;
-    CONNECTION_TIMEOUT?: number;
-    MIGRATIONS_SCHEMA?: string;
+    ACQUIRE_CONNECTION_TIMEOUT?: number;
+    MIGRATIONS_TABLE_SCHEMA?: string;
     MIGRATIONS_DIR: string;
-    SEARCH_PATH: string[];
+    SEARCH_PATH?: string[];
 };
