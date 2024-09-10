@@ -36,13 +36,13 @@ export class FileManager {
                 const cleanName = cleanFileName(files[i].name);
 
                 // accounting for this because parentPath doesn't exist in Node <v20.12.0
-                const basePath = files[i].parentPath || files[i].path;
-                const fullPath = path.resolve(basePath, files[i].name);
+                // const basePath = files[i].parentPath || files[i].path;
+                // const fullPath = path.resolve(basePath, files[i].name);
                 const index = i + 1;
 
                 const migFile: MigFile = {
                     index,
-                    fullName: fullPath,
+                    fullName: files[i].name,
                     cleanedName: cleanName,
                     status: completedMigrations.has(cleanName) ? MigFileStatus.COMPLETED : MigFileStatus.PENDING
                 };

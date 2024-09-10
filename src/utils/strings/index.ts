@@ -6,12 +6,12 @@ import { SeedType } from '../../types';
  */
 export const handleCommaSeparateArgs = (val: string, prev?: string[]): string[] => {
     const cleanVal = val.split(/[-,]/).filter((it) => it);
-    if (prev) {
-        prev.push(...cleanVal);
-        return prev;
-    }
 
-    return cleanVal;
+    if (!prev) prev = [];
+
+    prev.push(...cleanVal);
+
+    return prev;
 };
 
 /**
