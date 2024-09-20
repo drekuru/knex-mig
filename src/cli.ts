@@ -56,7 +56,9 @@ seedCmd
     .aliases(['r'])
     .description('Run seed files')
     .action(Commands.runSeeds)
-    .argument('[filenames...]', 'seed files to run', handleCommaSeparateArgs);
+    .argument('[filenames...]', 'seed files to run', handleCommaSeparateArgs)
+    .option(...(REUSABLE_OPTIONS.all as [string, string]))
+    .option(...(REUSABLE_OPTIONS.but as [string, string]));
 
 /**
  * ------------------------------- ENV --------------------------------------
