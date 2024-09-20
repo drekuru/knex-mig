@@ -1,5 +1,5 @@
 {
-  "name": "mig",
+  "name": "knex-mig",
   "version": "0.0.1",
   "description": "Relational Database migration tool - built on top of knex.js",
   "main": "./dist/cli.js",
