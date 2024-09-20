@@ -1,15 +1,51 @@
 import { SeedType } from '../../types';
+import { pp } from '../logger';
 
 /**
- * Custom arg parser for comma separated args
- * @description Handles parsing args
+ * Custom arg parser for delimiter separated args
  */
-export const handleCommaSeparateArgs = (val: string, prev?: string[]): string[] => {
-    const cleanVal = val.split(/[-,]/).filter((it) => it);
+export const createDelimitingFunction = (delimiters: string[]): ((val: string, prev?: string[]) => string[]) => {
+    const rgx = new RegExp(`[${delimiters.join('')}]`);
 
+    return (val: string, prev?: string[]): string[] => {
+        const cleanVal = val.split(rgx).filter((it) => it);
+
+        if (!prev) prev = [];
+
+        prev.push(...cleanVal);
+
+        return prev;
+    };
+};
+
+export const handleCommaSeparateArgs = createDelimitingFunction([',']);
+
+// function that takes in pairs of value ranges that look like this: 1-5,6-10,11-15 and returns an array of arrays
+export const handleCommaSeparatePairs = (val: string, prev?: string[][]): string[][] => {
     if (!prev) prev = [];
 
-    prev.push(...cleanVal);
+    // first split by comma
+    const pairs = val.split(',');
+
+    // then split by dash
+    for (const pair of pairs) {
+        const [start, end] = pair.split('-');
+
+        const startNum = parseInt(start);
+        const endNum = parseInt(end);
+        if (isNaN(startNum) || isNaN(endNum)) {
+            pp.error('Invalid range provided');
+            pp.warn(`Input: ${val}`);
+            process.exit(1);
+        }
+
+        // make sure the order is correct, if not reverse it
+        if (startNum > endNum) {
+            prev.push([end, start]);
+        } else {
+            prev.push([start, end]);
+        }
+    }
 
     return prev;
 };

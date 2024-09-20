@@ -2,32 +2,43 @@ import chalk from 'chalk';
 import { cleanFileName, Colors, getSeedType, pp } from '../utils';
 import { EnvManager } from './env.manager';
 import { existsSync, lstatSync, readdirSync } from 'fs';
-import { SeedNode, SeedType } from '../types';
+import { MigrateOptions, SeedNode, SeedType } from '../types';
 import path from 'path';
 import { Knex } from 'knex';
 
 export class SeedManager {
-    private static tree: SeedNode;
+    private static _tree: SeedNode;
+    private static _indexedFiles: Map<number, SeedNode> = new Map();
     private static fileCount: number = 0;
 
-    static initFileTree(): void {
-        if (!this.tree) {
-            // build the tree
-            const pathToSeeds = EnvManager.get().SEED_DIR;
-
-            if (!pathToSeeds || !existsSync(pathToSeeds)) {
-                pp.error(`Seed directory not found at ${chalk.redBright(pathToSeeds)}`);
-                process.exit(1);
-            }
-
-            this.tree = this.buildTree(pathToSeeds);
-            this.tree.name = '.';
+    static get tree(): SeedNode {
+        if (!this._tree) {
+            this.initFileTree();
         }
+        return this._tree;
+    }
+
+    static get indexedFiles(): Map<number, SeedNode> {
+        if (!this._indexedFiles.size) {
+            this.initFileTree();
+        }
+        return this._indexedFiles;
+    }
+
+    static initFileTree(): void {
+        // build the tree
+        const pathToSeeds = EnvManager.get().SEED_DIR;
+
+        if (!pathToSeeds || !existsSync(pathToSeeds)) {
+            pp.error(`Seed directory not found at ${chalk.redBright(pathToSeeds)}`);
+            process.exit(1);
+        }
+
+        this._tree = this.buildTree(pathToSeeds);
+        this._tree.name = '.';
     }
 
     static printTree(rootNode?: SeedNode): void {
-        this.initFileTree();
-
         if (!rootNode) {
             rootNode = this.tree;
         }
@@ -43,7 +54,7 @@ export class SeedManager {
         if (node.isFile) {
             pp.info(`${prefix}${connector}${node.index} - ${node.name}`);
         } else {
-            let newPrefix;
+            let newPrefix: string;
             if (node.name === '.') {
                 pp.info(`${prefix}${node.name}`);
                 newPrefix = prefix + (isLast ? '' : '│');
@@ -93,15 +104,21 @@ export class SeedManager {
                 seedType: getSeedType(extension)
             };
 
+            this._indexedFiles.set(node.index!, node);
+
             return node;
         }
     }
 
     public static getFile(filepath: string): SeedNode | undefined {
-        this.initFileTree();
+        let currentNode = this.tree;
+
+        // check if filepath is actually an integer
+        if (!isNaN(parseInt(filepath))) {
+            return this.getFileByIndex(parseInt(filepath));
+        }
 
         const parts = filepath.split('/');
-        let currentNode = this.tree;
 
         for (const part of parts) {
             const child = currentNode.children?.get(part);
@@ -116,21 +133,60 @@ export class SeedManager {
         return currentNode;
     }
 
-    static async runSeed(seed: SeedNode, trx: Knex.Transaction): Promise<void> {
-        pp.info(`Running seed [${seed.name}]`);
+    private static getFileByIndex(index: number): SeedNode | undefined {
+        return this.indexedFiles.get(index);
+    }
 
-        if (seed.seedType === SeedType.DYNAMIC) {
-            await trx.transaction(async (trx) => {
+    static prepareSeedFiles(filenames: string[], options: MigrateOptions): SeedNode[] {
+        const filesToProcess: Map<number, SeedNode> = new Map();
+
+        if (options.all) {
+            const allFiles = Array.from(this.indexedFiles.values());
+            allFiles.forEach((file) => filesToProcess.set(file.index!, file));
+        } else {
+            for (const filename of filenames) {
+                const file = this.getFile(filename);
+
+                if (file) {
+                    filesToProcess.set(file.index!, file);
+                }
+            }
+        }
+
+        if (options.but?.length) {
+            // get files
+            for (const exclude of options.but) {
+                const fileToExclude = this.getFile(exclude);
+
+                if (fileToExclude) {
+                    filesToProcess.delete(fileToExclude.index!);
+                }
+            }
+        }
+
+        return Array.from(filesToProcess.values());
+    }
+
+    static async runSeed(seed: SeedNode, trx: Knex.Transaction): Promise<void> {
+        const baseMsg = `Seed [${Colors.yellowOlive(`${seed.index} - ${seed.name}`)}]`;
+        try {
+            pp.info(`${baseMsg}: RUNNING`);
+
+            if (seed.seedType === SeedType.DYNAMIC) {
                 const seedFn = require(seed.fullPath);
                 await seedFn.seed(trx);
-                pp.log(`Seed [${seed.name}] ran successfully`);
-            });
-        } else if (seed.seedType === SeedType.STATIC) {
-            await this.handleStaticSeed(seed, trx);
-            pp.log(`Seed [${seed.name}] ran successfully`);
-        } else {
-            pp.error(`Seed type not supported for [${seed.name}]`);
-            return;
+            } else if (seed.seedType === SeedType.STATIC) {
+                await this.handleStaticSeed(seed, trx);
+            } else {
+                pp.error(`Seed type not supported for [${Colors.yellowOlive(seed.name)}]`);
+                return;
+            }
+
+            pp.info(`${baseMsg}: SUCCEEDED`);
+        } catch (err) {
+            pp.info(`${baseMsg}: ${Colors.indianRed('FAILED')}`);
+            pp.error(err);
+            process.exit(1);
         }
     }
 
@@ -149,11 +205,7 @@ export class SeedManager {
             .withSchema(seedJson.schema)
             .insert(seedJson.data)
             .onConflict(seedJson.unique)
-            .merge()
-            .catch((err) => {
-                pp.error(`Error running seed [${seed.name}]`);
-                pp.error(err);
-            });
+            .merge();
 
         pp.debug(res);
     }
