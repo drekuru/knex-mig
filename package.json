@@ -1,5 +1,5 @@
 {
-  "name": "mig",
+  "name": "knex-mig",
   "version": "0.0.1",
   "description": "Relational Database migration tool - built on top of knex.js",
   "main": "./dist/cli.js",
@@ -18,7 +18,7 @@
   "author": "Andrey Kurudimov",
   "license": "GPL-2.0-only",
   "bin": {
-    "mig": "./dist/cli.js"
+    "mg": "./dist/cli.js"
   },
   "scripts": {
     "clean": "rm -rf ./dist",
