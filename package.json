@@ -1,6 +1,6 @@
 {
   "name": "knex-mig",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Relational Database migration tool - built on top of knex.js",
   "main": "./dist/cli.js",
   "keywords": [
@@ -61,5 +61,10 @@
     "resolve-tspaths": "^0.8.19",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ]
 }
