@@ -11,7 +11,7 @@ import { handleCommaSeparateArgs, pp } from './utils';
 import { ConnectionManager, FileManager } from './components';
 
 const mig = new Command();
-mig.name('mig').version(pkg.version);
+mig.name('knex-mig').version(pkg.version);
 
 const envCmd = mig.command('env');
 
@@ -63,7 +63,7 @@ seedCmd
 /**
  * ------------------------------- ENV --------------------------------------
  */
-envCmd.description('Manages the env files, do `mig env -h` for more info');
+envCmd.description('Manages the env files, do `mg env -h` for more info');
 
 envCmd.command('list').aliases(['l', 'ls']).description('List existing env configs').action(Commands.listEnvs);
 
@@ -154,7 +154,7 @@ mig.command('down')
 
 mig.command('refresh')
     .aliases(['r'])
-    .description('Runs mig down and mig up on specified migrations')
+    .description('Runs mg down and mg up on specified migrations')
     .action(Commands.refresh)
     .argument('[filenames...]', 'migration files to run', handleCommaSeparateArgs)
     .option(...(REUSABLE_OPTIONS.all as [string, string]))
@@ -180,7 +180,7 @@ mig.command('destroy')
 
 mig.command('setup')
     .aliases(['s', 'init', 'i'])
-    .description('Sets up mig and optionally initializes the database')
+    .description('Sets up knex-mig and optionally initializes the database')
     .action(Commands.setup)
     .option(...(REUSABLE_OPTIONS.verbose as [string, string]))
     .option(

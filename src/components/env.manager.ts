@@ -43,7 +43,7 @@ export class EnvManager {
      */
     static validateENVPath(envName: string | null): string {
         if (!envName) {
-            pp.error('Env name not provided. Maybe try mig env set <envName>');
+            pp.error('Env name not provided. Maybe try `mg env set <envName>`');
             process.exit(1);
         }
 

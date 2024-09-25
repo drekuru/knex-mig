@@ -69,7 +69,7 @@ mg ss
 9. To run a migration file, do `mg up <filename>`. This will run the migration file and update the state of the migration in the database.
 
 ```bash
-# we can use the file number instead of the name (in this case it would be `mig up 1` since it's our first migration)
+# we can use the file number instead of the name (in this case it would be `mg up 1` since it's our first migration)
 mg up users
 ```
 
@@ -77,6 +77,6 @@ For more information on the available commands, run `mg -h`.
 
 ### Feature Roadmap:
 
--   `mig seed make <name>` - Create a new seed migration (should give user option to create .json or .js file)
+-   `mg seed make <name>` - Create a new seed migration (should give user option to create .json or .js file)
 -   add support for .sql files
--   `mig make <name>` - this exists but need to add option to create a .sql file
+-   `mg make <name>` - this exists but need to add option to create a .sql file

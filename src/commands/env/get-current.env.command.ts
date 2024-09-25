@@ -6,7 +6,7 @@ export const getCurrentEnv = (): void => {
     const { envName } = ContextManager.ctx;
 
     if (!envName) {
-        pp.error(`No env set. Try running 'mig env set <envName>'`);
+        pp.error(`No env set. Try running 'mg env set <envName>'`);
         return;
     }
 

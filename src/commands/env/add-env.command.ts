@@ -42,7 +42,7 @@ export const addEnv = (
 
     copyFileSync(fullPath, newFilePath);
 
-    pp.info(`[${fileName}] added to mig environment`);
+    pp.info(`[${fileName}] added to knex-mig environment`);
 
     if (options.setCurrent === true) {
         setEnv(fileName);

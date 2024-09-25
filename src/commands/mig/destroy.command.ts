@@ -68,7 +68,7 @@ export const destroy = async (): Promise<void> => {
             }
 
             pp.info('Dropped schemas successfully!');
-            pp.log(`To reinitialize the database, run 'mig setup'`);
+            pp.log(`To reinitialize the database, run 'mg setup'`);
 
             rl.close();
             return;

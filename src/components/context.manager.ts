@@ -15,7 +15,7 @@ export class ContextManager {
 
     private static load(): Context {
         if (!fs.existsSync(PathManager.CONTEXT_FILE_PATH)) {
-            pp.error('context file not found, run `mig setup` to create one');
+            pp.error('context file not found, run `mg setup` to create one');
             process.exit(1);
         }
 
