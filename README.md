@@ -9,10 +9,10 @@
 ## Features
 
 -   Atomic operations
--   Automatic Rollback on error
+-   Automatic rollback on error
 -   Seeding
 -   Transaction support
--   Migration Locking
+-   Migration locking
 -   Multi environment support
 -   Selective/Partial migration
 
@@ -26,7 +26,7 @@ npm install -g knex-mig
 
 To get started, run `mg -h` to see the available commands and options.
 
-1. To get the directories needed for the migrator to function propertly, run `mg setup`. This will create some directories in your `$USER_HOME` directory.
+1. To get the directories needed for the migrator to function properly, run `mg setup`. This will create some directories in your `$USER_HOME` directory.
 
 ```bash
 mg setup

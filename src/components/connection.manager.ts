@@ -27,7 +27,7 @@ export class ConnectionManager {
 
     private static buildConfig(): EnvConfig {
         EnvManager.get();
-        const searchPath = process.env.SEARCH_PATH?.split(',');
+        const searchPath = process.env.SEARCH_PATH?.split(',')?.filter((val) => val);
 
         const config = {
             DATABASE: safeRead('DATABASE'),
@@ -47,7 +47,7 @@ export class ConnectionManager {
             SSL_REJECT_UNAUTHORIZED: process.env.SSL_REJECT_UNAUTHORIZED === 'true',
             MIGRATIONS_TABLE_SCHEMA: process.env.MIGRATIONS_TABLE_SCHEMA,
             MIGRATIONS_DIR: safeRead('MIGRATIONS_DIR'),
-            SEARCH_PATH: searchPath
+            SEARCH_PATH: searchPath?.length ? searchPath : undefined
         };
 
         return config;
