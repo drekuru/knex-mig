@@ -89,7 +89,7 @@ export class ConnectionManager {
 
         if (config.SSL_REJECT_UNAUTHORIZED) {
             knexConfig.connection!['ssl'] = {
-                rejectUnauthorized: config.SSL_REJECT_UNAUTHORIZED || true,
+                rejectUnauthorized: false,
                 ca: config.SSL_CA,
                 cert: config.SSL_CERT,
                 key: config.SSL_KEY
