@@ -38,9 +38,11 @@ export const migDown = async (
 
     const knex = ConnectionManager.knex;
 
+    const arrayOfFiles = Array.from(filesToMigrate.values()).reverse();
+
     await knex
         .transaction(async (trx) => {
-            for (const filename of filesToMigrate.values()) {
+            for (const filename of arrayOfFiles) {
                 pp.info(`Migrating down ${filename.cleanedName}`);
                 await trx.migrate.down({
                     name: filename.fullName

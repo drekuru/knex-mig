@@ -18,7 +18,7 @@ export const createDelimitingFunction = (delimiters: string[]): ((val: string, p
     };
 };
 
-export const handleCommaSeparateArgs = createDelimitingFunction([',']);
+export const handleCommaSeparateArgs = createDelimitingFunction([',', ' ']);
 
 // function that takes in pairs of value ranges that look like this: 1-5,6-10,11-15 and returns an array of arrays
 export const handleCommaSeparatePairs = (val: string, prev?: string[][]): string[][] => {
