@@ -19,7 +19,7 @@ const envCmd = mig.command('env');
  * ------------------------------ HOOKS ----------------------------------
  */
 // handle loading the files (only for certain commands)
-const commandsToPreLoadFilesFor = ['up', 'down', 'refresh', 'clean', 'state', 'destroy'];
+const commandsToPreLoadFilesFor = ['up', 'down', 'refresh', 'clean', 'state'];
 mig.hook('preAction', async (cmd, action) => {
     action.getOptionValue('verbose') && pp.debugOn();
 

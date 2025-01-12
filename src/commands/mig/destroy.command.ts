@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import { ConnectionManager } from '../../components';
-import { Colors, pp } from '../../utils';
-import { createInterface } from 'readline/promises';
+import { Colors, newInterface, pp } from '../../utils';
 
 /**
  * @description Gets all schemas from the database and drops them - hard reset pretty much
@@ -33,13 +32,12 @@ export const destroy = async (): Promise<void> => {
 
             const schemaNames = schemasToDrop.map((row) => row.schema_name);
 
-            pp.debug('Schemas to drop:');
-            pp.debug(schemaNames.join('\n'));
+            pp.info('Schemas to drop:');
+            for (const schema of schemaNames) {
+                pp.info(`- ${schema}`, Colors.yellowOlive);
+            }
 
-            const rl = createInterface({
-                input: process.stdin,
-                output: process.stdout
-            });
+            const rl = newInterface();
 
             const response = await rl.question(Colors.orange('Are you sure you want to drop all schemas? (yes/no): '));
 
@@ -68,7 +66,7 @@ export const destroy = async (): Promise<void> => {
             }
 
             pp.info('Dropped schemas successfully!');
-            pp.log(`To reinitialize the database, run 'mg setup'`);
+            pp.log(`To reinitialize the database, run 'mg setup -d'`);
 
             rl.close();
             return;
